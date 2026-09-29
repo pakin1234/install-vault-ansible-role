@@ -9,11 +9,11 @@ vault_config_dir: /etc/vault.d
 vault_config_file: /etc/vault.d/vault.hcl
 vault_data_dir: /var/lib/vault
 
-vault_api_addr: "http://0.0.0.0:8200" # здесь вставить название домена
+vault_api_addr: "http://0.0.0.0:8200" # add domain name
 vault_cluster_addr: "http://127.0.0.1:8201"
 vault_node_id: "{{ inventory_hostname }}"
 
-vault_listener_address: "127.0.0.1:8200" # здесь добавить proxy_pass для nginx, или адрес сделать как "0.0.0.0:8200"
+vault_listener_address: "127.0.0.1:8200" # add proxy_pass for nginx, or make it as "0.0.0.0:8200"
 vault_cluster_listener_address: "127.0.0.1:8201"
 
 vault_tls_disable: true
