@@ -1,0 +1,22 @@
+ui = {{ vault_ui_enabled | lower }}
+
+api_addr = "{{ vault_api_addr }}"
+cluster_addr = "{{ vault_cluster_addr }}"
+
+disable_mlock = {{ vault_disable_mlock | lower }}
+
+listener "tcp" {
+  address         = "{{ vault_listener_address }}"
+  cluster_address = "{{ vault_cluster_listener_address }}"
+  tls_disable     = {{ vault_tls_disable | int }}
+}
+
+storage "raft" {
+  path    = "{{ vault_data_dir }}"
+  node_id = "{{ vault_node_id }}"
+
+  snapshot_threshold = {{ vault_raft_snapshot_threshold }}
+  snapshot_interval = "{{ vault_raft_snapshot_interval }}"
+
+  autopilot_reconcile_interval = "10s"
+}

@@ -1,0 +1,35 @@
+---
+vault_package_name: vault
+vault_service_name: vault
+
+vault_user: vault
+vault_group: vault
+
+vault_config_dir: /etc/vault.d
+vault_config_file: /etc/vault.d/vault.hcl
+vault_data_dir: /var/lib/vault
+
+vault_api_addr: "http://0.0.0.0:8200" # здесь вставить название домена
+vault_cluster_addr: "http://127.0.0.1:8201"
+vault_node_id: "{{ inventory_hostname }}"
+
+vault_listener_address: "127.0.0.1:8200" # здесь добавить proxy_pass для nginx, или адрес сделать как "0.0.0.0:8200"
+vault_cluster_listener_address: "127.0.0.1:8201"
+
+vault_tls_disable: true
+vault_disable_mlock: true 
+vault_ui_enabled: true
+
+vault_key_shares: 3
+vault_key_threshold: 2
+
+vault_raft_snapshot_threshold: 8192
+vault_raft_snapshot_interval: "120s"
+
+vault_validate_config: true
+vault_verify_service: true
+
+vault_perform_init: false
+vault_perform_unseal: false
+
+vault_package_state: present

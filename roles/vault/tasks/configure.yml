@@ -1,0 +1,41 @@
+---
+- name: Create Vault group
+  ansible.builtin.group:
+    name: "{{ vault_group }}"
+    system: true
+    state: present
+
+- name: Create Vault user
+  ansible.builtin.user:
+    name: "{{ vault_user }}"
+    group: "{{ vault_group }}"
+    system: true
+    shell: /usr/sbin/nologin
+    home: "{{ vault_data_dir }}"
+    create_home: false
+    state: present
+
+- name: Create Vault configuration directory
+  ansible.builtin.file:
+    path: "{{ vault_config_dir }}"
+    state: directory
+    owner: "{{ vault_user }}"
+    group: "{{ vault_group }}"
+    mode: "0750"
+
+- name: Create Vault data directory
+  ansible.builtin.file:
+    path: "{{ vault_data_dir }}"
+    state: directory
+    owner: "{{ vault_user }}"
+    group: "{{ vault_group }}"
+    mode: "0700"
+
+- name: Install Vault configuration
+  ansible.builtin.template:
+    src: vault.hcl.j2
+    dest: "{{ vault_config_file }}"
+    owner: "{{ vault_user }}"
+    group: "{{ vault_group }}"
+    mode: "0640"
+  notify: Restart Vault

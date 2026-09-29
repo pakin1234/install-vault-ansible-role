@@ -1,0 +1,21 @@
+---
+- name: Validate platform
+  ansible.builtin.assert:
+    that:
+      - ansible_facts.distribution == "Ubuntu"
+    fail_msg: >-
+      This role supports Ubuntu only. Detected:
+      {{ ansible_facts.distribution }} {{ ansible_facts.distribution_version }}
+
+- name: Install Vault
+  ansible.builtin.import_tasks: install.yml
+
+- name: Configure Vault
+  ansible.builtin.import_tasks: configure.yml
+
+- name: Configure and start Vault service
+  ansible.builtin.import_tasks: service.yml
+
+- name: Verify Vault
+  ansible.builtin.import_tasks: verify.yml
+  when: vault_verify_service | bool

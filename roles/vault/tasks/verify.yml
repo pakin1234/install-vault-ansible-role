@@ -1,0 +1,38 @@
+---
+- name: Gather service facts
+  ansible.builtin.service_facts:
+
+- name: Assert Vault service is running
+  ansible.builtin.assert:
+    that:
+      - "'vault.service' in ansible_facts.services"
+      - ansible_facts.services['vault.service'].state == "running"
+    fail_msg: "Vault service is not running."
+
+- name: Check Vault health endpoint locally
+  ansible.builtin.uri:
+    url: "http://127.0.0.1:8200/v1/sys/health"
+    method: GET
+    status_code:
+      - 200
+      - 429
+      - 472
+      - 473
+      - 501
+      - 503
+    return_content: false
+  register: vault_health
+  changed_when: false
+
+- name: Check Vault status
+  ansible.builtin.command:
+    cmd: vault status -format=json
+  environment:
+    VAULT_ADDR: "http://127.0.0.1:8200"
+  register: vault_status
+  changed_when: false
+  failed_when: false
+
+- name: Show Vault status
+  ansible.builtin.debug:
+    var: vault_status.stdout

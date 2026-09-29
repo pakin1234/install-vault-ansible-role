@@ -1,0 +1,52 @@
+---
+- name: Install prerequisites
+  ansible.builtin.apt:
+    name:
+      - ca-certificates
+      - curl
+      - gnupg
+      - lsb-release
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Get Debian architecture
+  ansible.builtin.command:
+    cmd: dpkg --print-architecture
+  register: vault_dpkg_architecture
+  changed_when: false
+
+- name: Download HashiCorp repository key
+  ansible.builtin.get_url:
+    url: https://apt.releases.hashicorp.com/gpg
+    dest: /tmp/hashicorp.asc
+    mode: "0644"
+
+- name: Install HashiCorp repository key
+  ansible.builtin.shell:
+    cmd: >
+      gpg --dearmor
+      --yes
+      --output /usr/share/keyrings/hashicorp-archive-keyring.gpg
+      /tmp/hashicorp.asc
+  args:
+    creates: /usr/share/keyrings/hashicorp-archive-keyring.gpg
+
+- name: Configure HashiCorp apt repository
+  ansible.builtin.apt_repository:
+    repo: >-
+      deb [arch={{ vault_dpkg_architecture.stdout }}
+      signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg]
+      https://apt.releases.hashicorp.com
+      {{ ansible_facts.distribution_release }} main
+    filename: hashicorp
+    state: present
+
+- name: Refresh apt cache
+  ansible.builtin.apt:
+    update_cache: true
+
+- name: Install latest stable Vault
+  ansible.builtin.apt:
+    name: "{{ vault_package_name }}"
+    state: "{{ vault_package_state }}"

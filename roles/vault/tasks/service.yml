@@ -1,0 +1,26 @@
+---
+- name: Create systemd override directory
+  ansible.builtin.file:
+    path: /etc/systemd/system/vault.service.d
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Install Vault systemd override
+  ansible.builtin.template:
+    src: vault.service.override.conf.j2
+    dest: /etc/systemd/system/vault.service.d/override.conf
+    owner: root
+    group: root
+    mode: "0644"
+  notify:
+    - Reload systemd
+    - Restart Vault
+
+- name: Enable and start Vault
+  ansible.builtin.systemd:
+    name: "{{ vault_service_name }}"
+    enabled: true
+    state: started
+    daemon_reload: true
